@@ -1,1 +1,0 @@
-abstreet_linux_v0_3_49/play_abstreet.sh: line 3: ./binaries/game: No such file or directory
