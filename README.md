@@ -1,17 +1,22 @@
-# light-works-site
-
-This template should help get you started developing with Vue 3 in Vite.
+# Light Works Site
 
 ## Recommended IDE Setup
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+[VSCode](https://code.visualstudio.com/)
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
+## Pre-Setup
+Ensure you have git and Node.JS installed, and that you are authenticated to GitHub.
 
 ## Project Setup
 
+If you are using VSCode's terminal, switch from PowerShell to CMD
+
+### Clone Site Branch
+```sh
+git clone -b site https://github.com/BenjaminWheeler-OU/Light-Works.git Light-Works-Site
+```
+
+### Install Dependencies
 ```sh
 npm install
 ```
@@ -22,8 +27,8 @@ npm install
 npm run dev
 ```
 
-### Compile and Minify for Production
+### Compile and Push to gh-pages
 
 ```sh
-npm run build
+npm run deploy
 ```
