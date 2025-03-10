@@ -16,6 +16,8 @@ import HelloWorld from './components/HelloWorld.vue'
     <h2>Group C</h2>
     <h2>C S 3203 – Spring 2025</h2>
     <h3>Benjamin Wheeler</h3>
+    <h3>Chandler Case</h3>
+
   </main>
 </template>
 
