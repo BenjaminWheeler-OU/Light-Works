@@ -17,7 +17,7 @@ import HelloWorld from './components/HelloWorld.vue'
     <h2>C S 3203 – Spring 2025</h2>
     <h3>Benjamin Wheeler</h3>
     <h3>Chandler Case</h3>
-
+    <h3>Brayden Garner</h3>
   </main>
 </template>
 
