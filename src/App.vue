@@ -13,7 +13,10 @@ import TheWelcome from './components/TheWelcome.vue'
   </header>
 
   <main>
-    <TheWelcome />
+    <h1>CI/CD Pipeline</h1>
+    <h2>Group C</h2>
+    <h2>C S 3203 – Spring 2025</h2>
+    <h3>Benjamin Wheeler</h3>
   </main>
 </template>
 
