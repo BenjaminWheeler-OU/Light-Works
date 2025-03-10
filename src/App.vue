@@ -18,6 +18,7 @@ import HelloWorld from './components/HelloWorld.vue'
     <h3>Benjamin Wheeler</h3>
     <h3>Chandler Case</h3>
     <h3>Brayden Garner</h3>
+    <h3>Edward Wages</h3>
   </main>
 </template>
 
