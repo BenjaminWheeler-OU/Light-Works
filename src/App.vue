@@ -12,7 +12,7 @@ import HelloWorld from './components/HelloWorld.vue'
   </header>
 
   <main>
-    <h1 class="green">CI/CD Pipeline</h1>
+    <h1 class="green">CI/CD Pipelin</h1>
     <h2>Group C</h2>
     <h2>C S 3203 – Spring 2025</h2>
     <h3>Levin Ward</h3>
