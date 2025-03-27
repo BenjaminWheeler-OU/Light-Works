@@ -1,3 +1,4 @@
+#!/bin/python
 # Before running this script, start the API server:
 #
 # > bin\headless.exe --port=1234
