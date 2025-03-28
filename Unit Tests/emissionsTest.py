@@ -1,5 +1,5 @@
 import unittest
-from emissionTester import emissionValidator
+from main import emissionValidator
 
 class TestEmissionReduction(unittest.TestCase):
     def test_valid_emission_calculation(self):
