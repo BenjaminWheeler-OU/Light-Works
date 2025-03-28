@@ -5,7 +5,7 @@ def average_time_spent_at_stoplight(wait_times):
     if not wait_times:
         return 0  # Return 0 if there are no wait times to avoid division by zero
     return mean(wait_times)
-
+#lets go
 class TestAverageTimeSpentAtStoplight(unittest.TestCase):
     
     def test_typical_case(self):
@@ -29,6 +29,10 @@ class TestAverageTimeSpentAtStoplight(unittest.TestCase):
     def test_negative_values(self):
         with self.assertRaises(ValueError):
             average_time_spent_at_stoplight([-10, 20, 30])
+
+    def test_neg_values(self):
+        with self.assertRaises(ValueError):
+            average_time_spent_at_stoplight([-20,30,-30])
 
 if __name__ == "__main__":
     unittest.main()
