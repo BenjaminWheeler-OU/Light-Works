@@ -8,6 +8,8 @@ import traci
 import sumolib
 from sumolib import checkBinary
 import sys
+# import from tests\safeMemoryAccess.py
+import tests.safeMemoryAccess
 
 # these should all be set in the GUI
 cycleTimeRange = (50, 120) # in seconds
@@ -27,12 +29,15 @@ class Population:
         
         # Get all traffic lights (intersections) from SUMO
         traffic_lights = traci.trafficlight.getIDList()
+        traffic_lights_access = tests.safeMemoryAccess.SafeMemoryAccess(traffic_lights)
         
-        for tl_id in traffic_lights:
-            # Get the current cycle time
-            current_cycle_time = traci.trafficlight.getPhaseDuration(tl_id)
-            # Create a new intersection with the current cycle time and position
-            self.intersections.append(Intersection(current_cycle_time, tl_id))
+        for i in range(len(traffic_lights)):
+            tl_id = traffic_lights_access.safe_read(i)
+            if tl_id is not None:
+                # Get the current cycle time
+                current_cycle_time = traci.trafficlight.getPhaseDuration(tl_id)
+                # Create a new intersection with the current cycle time and position
+                self.intersections.append(Intersection(current_cycle_time, tl_id))
 
 class Intersection:
     cycleTime = 60 # in seconds
@@ -51,27 +56,26 @@ class Intersection:
     def setCycleTime(self, cycleTime):
         self.cycleTime = cycleTime
 
-def main():
-    # Initialize SUMO
-    sumo_binary = checkBinary('sumo')
-    traci.start([sumo_binary, "-c", "example/data/cross.sumocfg"])
-    
+def doAlgorithm():
     populations = []
+    populations_access = tests.safeMemoryAccess.SafeMemoryAccess(populations)
     
     print("Starting learning algorithm")
-    # initialze populations
+    # initialize populations
     for i in range(populationSize):
-        populations.append(Population())
+        populations_access.safe_write(i, Population())
     
     # initialize the best population
-    bestPopulation = copy.deepcopy(populations[0])
+    bestPopulation = copy.deepcopy(populations_access.safe_read(0))
     
     # repeat for each generation
     for g in range(generations):
         print(f"Start running sims for gen {g}")
         # run the simulation for each population
-        for population in populations:
-            population.totalWaitingTime = runSim(population)
+        for i in range(len(populations)):
+            population = populations_access.safe_read(i)
+            if population is not None:
+                population.totalWaitingTime = runSim(population)
     
         # start a new generation with surviving populations and evolve
         # sort populations by lowest total waiting time
@@ -136,10 +140,13 @@ guiShape="passenger"/>
 
 def setSimCycleTime(intersections):
     # set the cycle time in SUMO
+    intersections_access = tests.safeMemoryAccess.SafeMemoryAccess(intersections)
     
     for i in range(len(intersections)):
-        print(f"Setting cycle time for intersection {intersections[i].getMyId()} to {intersections[i].getCycleTime()} seconds")
-        traci.trafficlight.setPhaseDuration(intersections[i].myId, intersections[i].getCycleTime())
+        intersection = intersections_access.safe_read(i)
+        
+        print(f"Setting cycle time for intersection {intersection.getMyId()} to {intersection.getCycleTime()} seconds")
+        traci.trafficlight.setPhaseDuration(intersection.myId, intersection.getCycleTime())
 
 def runSim(population):
     # set each intersection cycle time in SUMO
@@ -170,20 +177,25 @@ def getTotalWaitingTime():
 def evolvePopulations(survivingPopulations):
     # Evolve the surviving populations by mutating the cycle times by mutateFactor
     newPopulations = []
-    for population in survivingPopulations:
+    newPopulations_access = tests.safeMemoryAccess.SafeMemoryAccess(newPopulations)
+    
+    for i, population in enumerate(survivingPopulations):
         # each surviving population will have (1 / survivalRate) new children to ensure the population stays the same size
         for p in range(int(1 / survivalRate)):
             # Create a new population with the same structure but mutated values
             newPopulation = copy.deepcopy(population)
             
             # Mutate each intersection from the original population
-            for intersection in population.intersections:
-                rand = 1.0 + random.uniform(-mutateFactor, mutateFactor)
-                mutated_cycle_time = intersection.cycleTime * rand
-                print(f"Mutated cycle time for intersection {intersection.myId}: {mutated_cycle_time}")
-                intersection.cycleTime = mutated_cycle_time
-                
-            newPopulations.append(newPopulation)
+            intersections_access = tests.safeMemoryAccess.SafeMemoryAccess(population.intersections)
+            for j in range(len(population.intersections)):
+                intersection = intersections_access.safe_read(j)
+                if intersection is not None:
+                    rand = 1.0 + random.uniform(-mutateFactor, mutateFactor)
+                    mutated_cycle_time = intersection.cycleTime * rand
+                    print(f"Mutated cycle time for intersection {intersection.myId}: {mutated_cycle_time}")
+                    intersection.cycleTime = mutated_cycle_time
+            
+            newPopulations_access.safe_write(len(newPopulations), newPopulation)
     
     return newPopulations
 
@@ -204,7 +216,3 @@ def run():
                 traci.trafficlight.setPhase("0", 2)
         step += 1
     # Don't close traci here, let the main function handle it
-
-if __name__ == "__main__":
-    main()
-    
