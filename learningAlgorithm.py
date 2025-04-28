@@ -8,7 +8,6 @@ import traci
 import sumolib
 from sumolib import checkBinary
 import sys
-# import from tests\safeMemoryAccess.py
 import tests.safeMemoryAccess
 
 # these should all be set in the GUI
@@ -29,15 +28,18 @@ class Population:
         
         # Get all traffic lights (intersections) from SUMO
         traffic_lights = traci.trafficlight.getIDList()
+            
         traffic_lights_access = tests.safeMemoryAccess.SafeMemoryAccess(traffic_lights)
         
         for i in range(len(traffic_lights)):
-            tl_id = traffic_lights_access.safe_read(i)
+            tl_id = traffic_lights_access.safe_read(i, 40)
             if tl_id is not None:
-                # Get the current cycle time
-                current_cycle_time = traci.trafficlight.getPhaseDuration(tl_id)
+                # Set the cycle time to a random number in the range of cycleTimeRange
+                cycleTime = random.randint(cycleTimeRange[0], cycleTimeRange[1])
+                traci.trafficlight.setPhaseDuration(tl_id, cycleTime)
+ 
                 # Create a new intersection with the current cycle time and position
-                self.intersections.append(Intersection(current_cycle_time, tl_id))
+                self.intersections.append(Intersection(cycleTime, tl_id))
 
 class Intersection:
     cycleTime = 60 # in seconds
@@ -51,6 +53,9 @@ class Intersection:
         return self.cycleTime
     
     def getMyId(self):
+        if self.myId == 0:
+            print(f"ERROR: myId is 0.")
+            
         return self.myId
     
     def setCycleTime(self, cycleTime):
@@ -58,22 +63,23 @@ class Intersection:
 
 def doAlgorithm():
     populations = []
-    populations_access = tests.safeMemoryAccess.SafeMemoryAccess(populations)
-    
+
     print("Starting learning algorithm")
     # initialize populations
     for i in range(populationSize):
-        populations_access.safe_write(i, Population())
+        populations.append(Population())
+        
+    populations_access = tests.safeMemoryAccess.SafeMemoryAccess(populations)
     
     # initialize the best population
-    bestPopulation = copy.deepcopy(populations_access.safe_read(0))
+    bestPopulation = copy.deepcopy(populations_access.safe_read(0, 76))
     
     # repeat for each generation
     for g in range(generations):
         print(f"Start running sims for gen {g}")
         # run the simulation for each population
         for i in range(len(populations)):
-            population = populations_access.safe_read(i)
+            population = populations_access.safe_read(i, 83)
             if population is not None:
                 population.totalWaitingTime = runSim(population)
     
@@ -143,9 +149,9 @@ def setSimCycleTime(intersections):
     intersections_access = tests.safeMemoryAccess.SafeMemoryAccess(intersections)
     
     for i in range(len(intersections)):
-        intersection = intersections_access.safe_read(i)
+        intersection = intersections_access.safe_read(i, 153)
         
-        print(f"Setting cycle time for intersection {intersection.getMyId()} to {intersection.getCycleTime()} seconds")
+        # print(f"Setting cycle time for intersection {intersection.getMyId()} to {intersection.getCycleTime()} seconds")
         traci.trafficlight.setPhaseDuration(intersection.myId, intersection.getCycleTime())
 
 def runSim(population):
@@ -156,28 +162,15 @@ def runSim(population):
     return getTotalWaitingTime()  # Return the waiting time instead of just printing
 
 def getTotalWaitingTime():
-    # Read the tripinfo output file to get total waiting time
-    total_waiting = 0
-    try:
-        import xml.etree.ElementTree as ET
-        tree = ET.parse('example/tripinfo.xml')
-        root = tree.getroot()
+    total = 0
+    for vehicle_id in traci.vehicle.getIDList():
+        total += traci.vehicle.getWaitingTime(vehicle_id)
         
-        for trip in root.findall('tripinfo'):
-            waiting_time = float(trip.get('waitingTime', 0))
-            total_waiting += waiting_time
-            
-    except Exception as e:
-        print(f"Error reading tripinfo file: {e}")
-        return 999999999999  # Return a large number if we can't read the file
-    
-    print(f"Total waiting time: {total_waiting}")
-    return total_waiting
+    return total
 
 def evolvePopulations(survivingPopulations):
     # Evolve the surviving populations by mutating the cycle times by mutateFactor
     newPopulations = []
-    newPopulations_access = tests.safeMemoryAccess.SafeMemoryAccess(newPopulations)
     
     for i, population in enumerate(survivingPopulations):
         # each surviving population will have (1 / survivalRate) new children to ensure the population stays the same size
@@ -188,31 +181,20 @@ def evolvePopulations(survivingPopulations):
             # Mutate each intersection from the original population
             intersections_access = tests.safeMemoryAccess.SafeMemoryAccess(population.intersections)
             for j in range(len(population.intersections)):
-                intersection = intersections_access.safe_read(j)
+                intersection = intersections_access.safe_read(j, 198)
                 if intersection is not None:
                     rand = 1.0 + random.uniform(-mutateFactor, mutateFactor)
                     mutated_cycle_time = intersection.cycleTime * rand
-                    print(f"Mutated cycle time for intersection {intersection.myId}: {mutated_cycle_time}")
+                    #print(f"Mutated cycle time for intersection {intersection.myId}: {mutated_cycle_time}")
                     intersection.cycleTime = mutated_cycle_time
             
-            newPopulations_access.safe_write(len(newPopulations), newPopulation)
+            newPopulations.append(newPopulation)
     
     return newPopulations
 
 def run():
     """execute the TraCI control loop"""
-    step = 0
-    # we start with phase 2 where EW has green
-    traci.trafficlight.setPhase("0", 2)
-    while traci.simulation.getMinExpectedNumber() > 0:
+    # simply run the simulation for a set amount of time at the highest possible simulation speed
+    #traci.simulation.step(3600)
+    for i in range(3600):
         traci.simulationStep()
-        if traci.trafficlight.getPhase("0") == 2:
-            # we are not already switching
-            if traci.inductionloop.getLastStepVehicleNumber("0") > 0:
-                # there is a vehicle from the north, switch
-                traci.trafficlight.setPhase("0", 3)
-            else:
-                # otherwise try to keep green for EW
-                traci.trafficlight.setPhase("0", 2)
-        step += 1
-    # Don't close traci here, let the main function handle it
