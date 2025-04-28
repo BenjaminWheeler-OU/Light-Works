@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 
-#Make sure to install requirements.txt with pip:
-#pip install -r requirements.txt
-
-#Virtual environments will also work:
-#https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/
+#Refer to README.MD for project setup and resources
 
 import os
 import sys
