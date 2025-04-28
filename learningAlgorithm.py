@@ -153,8 +153,7 @@ def setSimCycleTime(intersections):
     for i in range(len(intersections)):
         intersection = intersections_access.safe_read(i, 153)
         
-        #print(f"Setting cycle time for intersection {intersection.getMyId()} to {intersection.getCycleTime()} seconds")
-        
+        # ---------- THIS SHOULD WORK BUT IT DOESN'T - LEVIN ----------
         programs = traci.trafficlight.getAllProgramLogics(intersection.getMyId())
 
         # Pick the active program (assuming programs[0])
