@@ -47,7 +47,7 @@ git clone https://github.com/BenjaminWheeler-OU/Light-Works.git
 ```
 
 #### Change Directory
-If you are using VSCode, then open the newly created **Light-Works** folder
+If you are using VSCode, then open the newly created **Light-Works** folder  
 Otherwise:
 ```sh
 cd Light-Works
@@ -74,7 +74,7 @@ python main.py
 https://sumo.dlr.de/docs/TraCI.html
 
 ### Adaptive Traffic Lights Example
-https://sumo.dlr.de/docs/Tutorials/TraCI4Traffic_Lights.html
+https://sumo.dlr.de/docs/Tutorials/TraCI4Traffic_Lights.html  
 [Local Clone](example/example.py)
 
 ## Authors
