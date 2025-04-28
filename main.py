@@ -9,7 +9,7 @@ import sumo
 from sumolib import checkBinary
 import learningAlgorithm
 
-useGUI = False
+useGUI = True
 
 if __name__ == "__main__":
     try:

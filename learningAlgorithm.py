@@ -8,7 +8,6 @@ import traci
 import sumolib
 from sumolib import checkBinary
 import sys
-# import from tests\safeMemoryAccess.py
 import tests.safeMemoryAccess
 
 # these should all be set in the GUI
@@ -152,7 +151,7 @@ def setSimCycleTime(intersections):
     for i in range(len(intersections)):
         intersection = intersections_access.safe_read(i, 153)
         
-        print(f"Setting cycle time for intersection {intersection.getMyId()} to {intersection.getCycleTime()} seconds")
+        # print(f"Setting cycle time for intersection {intersection.getMyId()} to {intersection.getCycleTime()} seconds")
         traci.trafficlight.setPhaseDuration(intersection.myId, intersection.getCycleTime())
 
 def runSim(population):
@@ -163,23 +162,11 @@ def runSim(population):
     return getTotalWaitingTime()  # Return the waiting time instead of just printing
 
 def getTotalWaitingTime():
-    # Read the tripinfo output file to get total waiting time
-    total_waiting = 0
-    try:
-        import xml.etree.ElementTree as ET
-        tree = ET.parse('example/tripinfo.xml')
-        root = tree.getroot()
+    total = 0
+    for vehicle_id in traci.vehicle.getIDList():
+        total += traci.vehicle.getWaitingTime(vehicle_id)
         
-        for trip in root.findall('tripinfo'):
-            waiting_time = float(trip.get('waitingTime', 0))
-            total_waiting += waiting_time
-            
-    except Exception as e:
-        print(f"Error reading tripinfo file: {e}")
-        return 999999999999  # Return a large number if we can't read the file
-    
-    print(f"Total waiting time: {total_waiting}")
-    return total_waiting
+    return total
 
 def evolvePopulations(survivingPopulations):
     # Evolve the surviving populations by mutating the cycle times by mutateFactor
@@ -198,28 +185,16 @@ def evolvePopulations(survivingPopulations):
                 if intersection is not None:
                     rand = 1.0 + random.uniform(-mutateFactor, mutateFactor)
                     mutated_cycle_time = intersection.cycleTime * rand
-                    print(f"Mutated cycle time for intersection {intersection.myId}: {mutated_cycle_time}")
+                    #print(f"Mutated cycle time for intersection {intersection.myId}: {mutated_cycle_time}")
                     intersection.cycleTime = mutated_cycle_time
             
             newPopulations.append(newPopulation)
     
     return newPopulations
 
-# IDK IF THIS IS RIGHT, LIKE WHAT IS THIS?!?!?
 def run():
     """execute the TraCI control loop"""
-    step = 0
-    # we start with phase 2 where EW has green
-    traci.trafficlight.setPhase("0", 2)
-    while traci.simulation.getMinExpectedNumber() > 0:
+    # simply run the simulation for a set amount of time at the highest possible simulation speed
+    #traci.simulation.step(3600)
+    for i in range(3600):
         traci.simulationStep()
-        if traci.trafficlight.getPhase("0") == 2:
-            # we are not already switching
-            if traci.inductionloop.getLastStepVehicleNumber("0") > 0:
-                # there is a vehicle from the north, switch
-                traci.trafficlight.setPhase("0", 3)
-            else:
-                # otherwise try to keep green for EW
-                traci.trafficlight.setPhase("0", 2)
-        step += 1
-    # Don't close traci here, let the main function handle it
