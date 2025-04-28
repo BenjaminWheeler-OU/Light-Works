@@ -196,5 +196,5 @@ def run():
     """execute the TraCI control loop"""
     # simply run the simulation for a set amount of time at the highest possible simulation speed
     #traci.simulation.step(3600)
-    for i in range(3600):
-        traci.simulationStep()
+    for i in range(1000):
+        traci.simulationStep(i)
