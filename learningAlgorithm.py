@@ -9,7 +9,7 @@ import sumolib
 from sumolib import checkBinary
 import sys
 import tests.safeMemoryAccess
-
+import os
 # these should all be set in the GUI
 cycleTimeRange = (50, 120) # in seconds
 defaultCycleTime = 60 # in seconds
@@ -19,12 +19,13 @@ generations = 10
 survivalRate = 0.1
 mutateFactor = 0.2
 bestPopulation = None
-
+sumo_binary = checkBinary('sumo-gui')
+sumo_cfg = os.path.join('normanFiles', 'norman.sumo.cfg')
 class Population:
     # default constructor
     def __init__(self):
         self.intersections = []
-        self.totalWaitingTime = 999999999999 # big ass number
+        self.totalWaitingTime = float('inf')
         
         # Get all traffic lights (intersections) from SUMO
         traffic_lights = traci.trafficlight.getIDList()
@@ -82,6 +83,7 @@ def doAlgorithm():
             population = populations_access.safe_read(i, 83)
             if population is not None:
                 population.totalWaitingTime = runSim(population)
+                print(f"Population {i} total waiting time: {population.totalWaitingTime}")
     
         # start a new generation with surviving populations and evolve
         # sort populations by lowest total waiting time
@@ -157,16 +159,18 @@ def setSimCycleTime(intersections):
 def runSim(population):
     # set each intersection cycle time in SUMO
     setSimCycleTime(population.intersections)
+    traci.load(['-c', sumo_cfg])
     
-    run()
-    return getTotalWaitingTime()  # Return the waiting time instead of just printing
 
-def getTotalWaitingTime():
-    total = 0
+    return run()
+
+def get_waiting_time():
+    waiting_times = {}
     for vehicle_id in traci.vehicle.getIDList():
-        total += traci.vehicle.getWaitingTime(vehicle_id)
-        
-    return total
+        # Get the vehicle's waiting time (time spent at traffic lights)
+        waiting_time = traci.vehicle.getWaitingTime(vehicle_id)
+        waiting_times[vehicle_id] = waiting_time
+    return waiting_times
 
 def evolvePopulations(survivingPopulations):
     # Evolve the surviving populations by mutating the cycle times by mutateFactor
@@ -192,9 +196,27 @@ def evolvePopulations(survivingPopulations):
     
     return newPopulations
 
+def get_waiting_time(vehicles):
+    current_waiting_time = 0
+    for vehicle_id in vehicles:
+        # Get the vehicle's waiting time (time spent at traffic lights)
+        current_waiting_time += traci.vehicle.getWaitingTime(vehicle_id)
+    
+    return current_waiting_time
+
 def run():
-    """execute the TraCI control loop"""
     # simply run the simulation for a set amount of time at the highest possible simulation speed
-    #traci.simulation.step(3600)
-    for i in range(1000):
-        traci.simulationStep(i)
+    step = 0
+    total_waiting_time = 0
+    
+    while step < 1000:  # Run simulation for 1000 steps
+        traci.simulationStep()
+        
+        # Get vehicles and calculate total waiting time
+        vehicles = traci.vehicle.getIDList()
+        current_waiting_time = get_waiting_time(vehicles)
+        total_waiting_time += current_waiting_time
+        
+        step += 1
+    
+    return total_waiting_time
