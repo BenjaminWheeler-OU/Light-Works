@@ -47,6 +47,13 @@ If you are using VSCode's terminal, switch from PowerShell to CMD
 git clone https://github.com/BenjaminWheeler-OU/Light-Works.git
 ```
 
+### Change Directory
+If you are using VSCode, then open the newly created **Light-Works** folder
+Otherwise:
+```sh
+cd Light-Works
+```
+
 ### Install Dependencies
 ```sh
 pip install -r requirements.txt
