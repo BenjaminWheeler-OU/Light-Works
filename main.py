@@ -16,12 +16,11 @@ if __name__ == "__main__":
         if not "SUMO_PATH" in os.environ:
             os.environ["SUMO_PATH"] = os.path.dirname(sumo.__file__)
         SUMO_PATH = os.environ["SUMO_PATH"]
-        
-        sumo_binary = checkBinary('sumo-gui' if useGUI else 'sumo')
+        sumo_binary = checkBinary('sumo-gui')
         sumo_cfg = os.path.join('normanFiles', 'norman.sumo.cfg')
         traci.start([sumo_binary, '-c', sumo_cfg])
         
-        # run the learning algorithm
+        # run the learning algorithm    
         learningAlgorithm.doAlgorithm()
     except Exception as e:
         if "Connection closed by SUMO" in str(e):
