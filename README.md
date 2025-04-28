@@ -39,35 +39,41 @@ Ensure the following are installed and setup:
 * Either Pip or venv
 
 ### Project Setup
-
 If you are using VSCode's terminal, switch from PowerShell to CMD
 
-### Clone Main Branch
+#### Clone Main Branch
 ```sh
 git clone https://github.com/BenjaminWheeler-OU/Light-Works.git
 ```
 
-### Change Directory
+#### Change Directory
 If you are using VSCode, then open the newly created **Light-Works** folder
 Otherwise:
 ```sh
 cd Light-Works
 ```
 
-### Install Dependencies
+#### Install Dependencies
 ```sh
 pip install -r requirements.txt
 ```
 
-### Run
+#### Run
 ```sh
 python main.py
 ```
 
-### Compile for Production
+#### Compile for Production
 *TBD*
 ```sh
 ```
+
+### Documentation
+#### Example Usage
+[example](example)
+
+#### TraCI - SUMO Documentation
+https://sumo.dlr.de/docs/TraCI.html
 
 ## Authors
 
