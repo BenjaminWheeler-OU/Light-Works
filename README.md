@@ -69,11 +69,13 @@ python main.py
 ```
 
 ### Resources
-#### Example Usage
-[Example](example/example.py)
 
 #### TraCI - SUMO Documentation
 https://sumo.dlr.de/docs/TraCI.html
+
+### Adaptive Traffic Lights Example
+https://sumo.dlr.de/docs/Tutorials/TraCI4Traffic_Lights.html
+[Local Clone](example/example.py)
 
 ## Authors
 
