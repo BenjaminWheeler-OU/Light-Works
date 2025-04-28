@@ -33,13 +33,12 @@ class Population:
         
         for i in range(len(traffic_lights)):
             tl_id = traffic_lights_access.safe_read(i, 40)
-            if tl_id is not None:
-                # Set the cycle time to a random number in the range of cycleTimeRange
-                cycleTime = random.randint(cycleTimeRange[0], cycleTimeRange[1])
-                traci.trafficlight.setPhaseDuration(tl_id, cycleTime)
- 
-                # Create a new intersection with the current cycle time and position
-                self.intersections.append(Intersection(cycleTime, tl_id))
+            # Set the cycle time to a random number in the range of cycleTimeRange
+            cycleTime = random.randint(cycleTimeRange[0], cycleTimeRange[1])
+            traci.trafficlight.setPhaseDuration(tl_id, cycleTime)
+
+            # Create a new intersection with the current cycle time and position
+            self.intersections.append(Intersection(cycleTime, tl_id))
 
 class Intersection:
     cycleTime = 60 # in seconds
@@ -170,8 +169,9 @@ def runSim(population):
     # set each intersection cycle time in SUMO
     setSimCycleTime(population.intersections)
     traci.load(['-c', sumo_cfg])
-    intersections = traci.trafficlight.getIDList()
-    traci.trafficlight.setPhaseDuration(intersections[0], random.randint(cycleTimeRange[0], cycleTimeRange[1]))
+    int_ids = traci.trafficlight.getIDList()
+    for intersection in population.intersections:
+        traci.trafficlight.setPhaseDuration(intersection.getMyId(), intersection.getCycleTime())
     
     return run()
 
