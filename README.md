@@ -70,7 +70,7 @@ python main.py
 
 ### Documentation
 #### Example Usage
-[example](example)
+[Example](example/example.py)
 
 #### TraCI - SUMO Documentation
 https://sumo.dlr.de/docs/TraCI.html
