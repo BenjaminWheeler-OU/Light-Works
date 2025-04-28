@@ -20,7 +20,7 @@ survivalRate = 0.1
 mutateFactor = 0.2
 bestPopulation = None
 sumo_binary = checkBinary('sumo-gui')
-sumo_cfg = os.path.join('normanFiles', 'norman.sumo.cfg')
+sumo_cfg = os.path.join('normanFiles', 'norman1.sumo.cfg')
 class Population:
     # default constructor
     def __init__(self):
@@ -29,7 +29,6 @@ class Population:
         
         # Get all traffic lights (intersections) from SUMO
         traffic_lights = traci.trafficlight.getIDList()
-            
         traffic_lights_access = tests.safeMemoryAccess.SafeMemoryAccess(traffic_lights)
         
         for i in range(len(traffic_lights)):
@@ -116,12 +115,12 @@ def doAlgorithm():
 
 def generate_routefile():
     random.seed(42)  # make tests reproducible
-    N = 3600  # number of time steps
+    N = 1000  # number of time steps
     # demand per second from different directions
     pWE = 1. / 10
     pEW = 1. / 11
     pNS = 1. / 30
-    with open("example/data/cross.rou.xml", "w") as routes:
+    with open("normanFiles/norman1.rou.xml", "w") as routes:
         print("""<routes>
         <vType id="typeWE" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="16.67" \
 guiShape="passenger"/>
@@ -171,6 +170,8 @@ def runSim(population):
     # set each intersection cycle time in SUMO
     setSimCycleTime(population.intersections)
     traci.load(['-c', sumo_cfg])
+    intersections = traci.trafficlight.getIDList()
+    traci.trafficlight.setPhaseDuration(intersections[0], random.randint(cycleTimeRange[0], cycleTimeRange[1]))
     
     return run()
 
