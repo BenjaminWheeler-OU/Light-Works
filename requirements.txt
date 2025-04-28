@@ -1,3 +1,8 @@
+altgraph==0.17.4
 eclipse-sumo==1.22.0
+packaging==25.0
+pyinstaller==6.13.0
+pyinstaller-hooks-contrib==2025.3
+setuptools==80.0.0
 sumolib==1.22.0
 traci==1.22.0
