@@ -68,7 +68,7 @@ python main.py
 ```sh
 ```
 
-### Documentation
+### Resources
 #### Example Usage
 [Example](example/example.py)
 
