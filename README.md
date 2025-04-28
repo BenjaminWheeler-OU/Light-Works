@@ -44,7 +44,7 @@ If you are using VSCode's terminal, switch from PowerShell to CMD
 
 ### Clone Main Branch
 ```sh
-git clone https://github.com/BenjaminWheeler-OU/Light-Works.git Light-Works-Site
+git clone https://github.com/BenjaminWheeler-OU/Light-Works.git
 ```
 
 ### Install Dependencies
