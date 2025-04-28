@@ -9,14 +9,14 @@ import sumo
 from sumolib import checkBinary
 import learningAlgorithm
 
-useGUI = True
+useGUI = False
 
 if __name__ == "__main__":
     try:
         if not "SUMO_PATH" in os.environ:
             os.environ["SUMO_PATH"] = os.path.dirname(sumo.__file__)
         SUMO_PATH = os.environ["SUMO_PATH"]
-        sumo_binary = checkBinary('sumo-gui')
+        sumo_binary = checkBinary('sumo-gui' if useGUI else 'sumo')
         sumo_cfg = os.path.join('normanFiles', 'norman.sumo.cfg')
         traci.start([sumo_binary, '-c', sumo_cfg])
         

@@ -83,7 +83,7 @@ def doAlgorithm():
             population = populations_access.safe_read(i, 83)
             if population is not None:
                 population.totalWaitingTime = runSim(population)
-                print(f"Population {i} total waiting time: {population.totalWaitingTime}")
+                print(f"\nPopulation {i} total waiting time: {population.totalWaitingTime}")
     
         # start a new generation with surviving populations and evolve
         # sort populations by lowest total waiting time
@@ -108,7 +108,7 @@ def doAlgorithm():
         print("Evolutions Complete!")
     
     # print the best population after all generations (will export to excel and SUMO later)
-    print(f"Best population total waiting time after all generations: {bestPopulation.totalWaitingTime}")
+    print(f"\nBest population total waiting time after all generations: {bestPopulation.totalWaitingTime}")
     print(f"Average total waiting time after all generations: {bestPopulation.totalWaitingTime / len(bestPopulation.intersections)}")
     
     # Close SUMO connection
@@ -153,15 +153,26 @@ def setSimCycleTime(intersections):
     for i in range(len(intersections)):
         intersection = intersections_access.safe_read(i, 153)
         
-        # print(f"Setting cycle time for intersection {intersection.getMyId()} to {intersection.getCycleTime()} seconds")
-        traci.trafficlight.setPhaseDuration(intersection.myId, intersection.getCycleTime())
+        #print(f"Setting cycle time for intersection {intersection.getMyId()} to {intersection.getCycleTime()} seconds")
+        
+        programs = traci.trafficlight.getAllProgramLogics(intersection.getMyId())
+
+        # Pick the active program (assuming programs[0])
+        program = programs[0]
+
+        # Modify the phases
+        for phase in program.phases:
+            if "r" in phase.state:  # If this phase contains a red light
+                phase.duration = intersection.getCycleTime()
+
+        # Apply the modified program
+        traci.trafficlight.setProgramLogic(intersection.getMyId(), program)
 
 def runSim(population):
     # set each intersection cycle time in SUMO
     setSimCycleTime(population.intersections)
     traci.load(['-c', sumo_cfg])
     
-
     return run()
 
 def get_waiting_time():
