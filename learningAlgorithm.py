@@ -24,7 +24,7 @@ class Population:
     # default constructor
     def __init__(self):
         self.intersections = []
-        self.totalWaitingTime = 999999999999 # big ass number
+        self.totalWaitingTime = float('inf')
         
         # Get all traffic lights (intersections) from SUMO
         traffic_lights = traci.trafficlight.getIDList()
@@ -82,6 +82,7 @@ def doAlgorithm():
             population = populations_access.safe_read(i, 83)
             if population is not None:
                 population.totalWaitingTime = runSim(population)
+                print(f"Population {i} total waiting time: {population.totalWaitingTime}")
     
         # start a new generation with surviving populations and evolve
         # sort populations by lowest total waiting time
@@ -157,15 +158,23 @@ def setSimCycleTime(intersections):
 def runSim(population):
     # set each intersection cycle time in SUMO
     setSimCycleTime(population.intersections)
-    
+    # run the simulation for 1000 steps
     run()
-    return getTotalWaitingTime()  # Return the waiting time instead of just printing
+    return getTotalWaitingTime()  # Return the total waiting time
+
+def get_waiting_time():
+    waiting_times = {}
+    for vehicle_id in traci.vehicle.getIDList():
+        # Get the vehicle's waiting time (time spent at traffic lights)
+        waiting_time = traci.vehicle.getWaitingTime(vehicle_id)
+        waiting_times[vehicle_id] = waiting_time
+    return waiting_times
 
 def getTotalWaitingTime():
+    waiting_times = get_waiting_time()
     total = 0
-    for vehicle_id in traci.vehicle.getIDList():
-        total += traci.vehicle.getWaitingTime(vehicle_id)
-        
+    for vehicle_id in waiting_times:
+        total += waiting_times[vehicle_id]
     return total
 
 def evolvePopulations(survivingPopulations):
@@ -193,8 +202,6 @@ def evolvePopulations(survivingPopulations):
     return newPopulations
 
 def run():
-    """execute the TraCI control loop"""
     # simply run the simulation for a set amount of time at the highest possible simulation speed
-    #traci.simulation.step(3600)
-    for i in range(1000):
-        traci.simulationStep(i)
+    for i in range(999):
+        traci.simulationStep()
