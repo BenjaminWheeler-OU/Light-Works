@@ -1,33 +1,16 @@
-name: Package Application with PyInstaller
+name: Build with PyInstaller
 on:
   push:
     branches:
       - main
 jobs:
-  build:
-    runs-on: windows-latest
+  build-linux:
+    runs-on: ubuntu-latest
     steps:
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Create Executable
+        uses: sayyid5416/pyinstaller@v1
         with:
-          python-version: '3.13.3'
-
-      - name: Install dependencies
-        run: >
-          python -m pip install --upgrade pip
-
-          pip install -r requirements.txt  # Install dependencies
-
-      - name: Package Application with PyInstaller
-        run: |
-          pyinstaller main.spec
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Light-Works-Windows
-          path: dist/main.exe
+          python_ver: '3.13.3'
+          spec: 'build.spec'
+          requirements: 'requirements.txt'
+          upload_exe_with_name: 'Light-Works-Linux'
