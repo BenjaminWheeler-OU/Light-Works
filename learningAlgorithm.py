@@ -158,9 +158,8 @@ def setSimCycleTime(intersections):
 def runSim(population):
     # set each intersection cycle time in SUMO
     setSimCycleTime(population.intersections)
-    # run the simulation for 1000 steps
-    run()
-    return getTotalWaitingTime()  # Return the total waiting time
+    # run the simulation for 1000 steps and return the total waiting time
+    return run()
 
 def get_waiting_time():
     waiting_times = {}
@@ -169,13 +168,6 @@ def get_waiting_time():
         waiting_time = traci.vehicle.getWaitingTime(vehicle_id)
         waiting_times[vehicle_id] = waiting_time
     return waiting_times
-
-def getTotalWaitingTime():
-    waiting_times = get_waiting_time()
-    total = 0
-    for vehicle_id in waiting_times:
-        total += waiting_times[vehicle_id]
-    return total
 
 def evolvePopulations(survivingPopulations):
     # Evolve the surviving populations by mutating the cycle times by mutateFactor
@@ -201,7 +193,27 @@ def evolvePopulations(survivingPopulations):
     
     return newPopulations
 
+def get_waiting_time(vehicles):
+    current_waiting_time = 0
+    for vehicle_id in vehicles:
+        # Get the vehicle's waiting time (time spent at traffic lights)
+        current_waiting_time += traci.vehicle.getWaitingTime(vehicle_id)
+    
+    return current_waiting_time
+
 def run():
     # simply run the simulation for a set amount of time at the highest possible simulation speed
-    for i in range(999):
+    step = 0
+    total_waiting_time = 0
+    
+    while step < 1000:  # Run simulation for 1000 steps
         traci.simulationStep()
+        
+        # Get vehicles and calculate total waiting time
+        vehicles = traci.vehicle.getIDList()
+        current_waiting_time = get_waiting_time(vehicles)
+        total_waiting_time += current_waiting_time
+        
+        step += 1
+    
+    return total_waiting_time
