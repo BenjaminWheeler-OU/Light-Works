@@ -29,15 +29,18 @@ class Population:
         
         # Get all traffic lights (intersections) from SUMO
         traffic_lights = traci.trafficlight.getIDList()
+            
         traffic_lights_access = tests.safeMemoryAccess.SafeMemoryAccess(traffic_lights)
         
         for i in range(len(traffic_lights)):
-            tl_id = traffic_lights_access.safe_read(i)
+            tl_id = traffic_lights_access.safe_read(i, 40)
             if tl_id is not None:
-                # Get the current cycle time
-                current_cycle_time = traci.trafficlight.getPhaseDuration(tl_id)
+                # Set the cycle time to a random number in the range of cycleTimeRange
+                cycleTime = random.randint(cycleTimeRange[0], cycleTimeRange[1])
+                traci.trafficlight.setPhaseDuration(tl_id, cycleTime)
+ 
                 # Create a new intersection with the current cycle time and position
-                self.intersections.append(Intersection(current_cycle_time, tl_id))
+                self.intersections.append(Intersection(cycleTime, tl_id))
 
 class Intersection:
     cycleTime = 60 # in seconds
@@ -51,6 +54,9 @@ class Intersection:
         return self.cycleTime
     
     def getMyId(self):
+        if self.myId == 0:
+            print(f"ERROR: myId is 0.")
+            
         return self.myId
     
     def setCycleTime(self, cycleTime):
@@ -58,22 +64,23 @@ class Intersection:
 
 def doAlgorithm():
     populations = []
-    populations_access = tests.safeMemoryAccess.SafeMemoryAccess(populations)
-    
+
     print("Starting learning algorithm")
     # initialize populations
     for i in range(populationSize):
-        populations_access.safe_write(i, Population())
+        populations.append(Population())
+        
+    populations_access = tests.safeMemoryAccess.SafeMemoryAccess(populations)
     
     # initialize the best population
-    bestPopulation = copy.deepcopy(populations_access.safe_read(0))
+    bestPopulation = copy.deepcopy(populations_access.safe_read(0, 76))
     
     # repeat for each generation
     for g in range(generations):
         print(f"Start running sims for gen {g}")
         # run the simulation for each population
         for i in range(len(populations)):
-            population = populations_access.safe_read(i)
+            population = populations_access.safe_read(i, 83)
             if population is not None:
                 population.totalWaitingTime = runSim(population)
     
@@ -143,7 +150,7 @@ def setSimCycleTime(intersections):
     intersections_access = tests.safeMemoryAccess.SafeMemoryAccess(intersections)
     
     for i in range(len(intersections)):
-        intersection = intersections_access.safe_read(i)
+        intersection = intersections_access.safe_read(i, 153)
         
         print(f"Setting cycle time for intersection {intersection.getMyId()} to {intersection.getCycleTime()} seconds")
         traci.trafficlight.setPhaseDuration(intersection.myId, intersection.getCycleTime())
@@ -177,7 +184,6 @@ def getTotalWaitingTime():
 def evolvePopulations(survivingPopulations):
     # Evolve the surviving populations by mutating the cycle times by mutateFactor
     newPopulations = []
-    newPopulations_access = tests.safeMemoryAccess.SafeMemoryAccess(newPopulations)
     
     for i, population in enumerate(survivingPopulations):
         # each surviving population will have (1 / survivalRate) new children to ensure the population stays the same size
@@ -188,17 +194,18 @@ def evolvePopulations(survivingPopulations):
             # Mutate each intersection from the original population
             intersections_access = tests.safeMemoryAccess.SafeMemoryAccess(population.intersections)
             for j in range(len(population.intersections)):
-                intersection = intersections_access.safe_read(j)
+                intersection = intersections_access.safe_read(j, 198)
                 if intersection is not None:
                     rand = 1.0 + random.uniform(-mutateFactor, mutateFactor)
                     mutated_cycle_time = intersection.cycleTime * rand
                     print(f"Mutated cycle time for intersection {intersection.myId}: {mutated_cycle_time}")
                     intersection.cycleTime = mutated_cycle_time
             
-            newPopulations_access.safe_write(len(newPopulations), newPopulation)
+            newPopulations.append(newPopulation)
     
     return newPopulations
 
+# IDK IF THIS IS RIGHT, LIKE WHAT IS THIS?!?!?
 def run():
     """execute the TraCI control loop"""
     step = 0
