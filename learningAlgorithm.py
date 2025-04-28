@@ -51,10 +51,10 @@ class Intersection:
     def setCycleTime(self, cycleTime):
         self.cycleTime = cycleTime
 
-def main():
+def doAlgorithm():
     # Initialize SUMO
-    sumo_binary = checkBinary('sumo')
-    traci.start([sumo_binary, "-c", "example/data/cross.sumocfg"])
+    #sumo_binary = checkBinary('sumo')
+    #traci.start([sumo_binary, "-c", "example/data/cross.sumocfg"])
     
     populations = []
     
@@ -204,7 +204,3 @@ def run():
                 traci.trafficlight.setPhase("0", 2)
         step += 1
     # Don't close traci here, let the main function handle it
-
-if __name__ == "__main__":
-    main()
-    
