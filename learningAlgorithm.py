@@ -9,7 +9,7 @@ import sumolib
 from sumolib import checkBinary
 import sys
 import tests.safeMemoryAccess
-
+import os
 # these should all be set in the GUI
 cycleTimeRange = (50, 120) # in seconds
 defaultCycleTime = 60 # in seconds
@@ -19,7 +19,8 @@ generations = 10
 survivalRate = 0.1
 mutateFactor = 0.2
 bestPopulation = None
-
+sumo_binary = checkBinary('sumo-gui')
+sumo_cfg = os.path.join('normanFiles', 'norman.sumo.cfg')
 class Population:
     # default constructor
     def __init__(self):
@@ -158,7 +159,9 @@ def setSimCycleTime(intersections):
 def runSim(population):
     # set each intersection cycle time in SUMO
     setSimCycleTime(population.intersections)
-    # run the simulation for 1000 steps and return the total waiting time
+    traci.load(['-c', sumo_cfg])
+    
+
     return run()
 
 def get_waiting_time():
