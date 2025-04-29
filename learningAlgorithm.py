@@ -20,7 +20,7 @@ survivalRate = 0.1
 mutateFactor = 0.2
 bestPopulation = None
 sumo_binary = checkBinary('sumo-gui')
-sumo_cfg = os.path.join('normanFiles', 'norman.sumo.cfg')
+sumo_cfg = os.path.join('normanFiles', 'norman1.sumo.cfg')
 class Population:
     # default constructor
     def __init__(self):
@@ -29,18 +29,16 @@ class Population:
         
         # Get all traffic lights (intersections) from SUMO
         traffic_lights = traci.trafficlight.getIDList()
-            
         traffic_lights_access = tests.safeMemoryAccess.SafeMemoryAccess(traffic_lights)
         
         for i in range(len(traffic_lights)):
             tl_id = traffic_lights_access.safe_read(i, 40)
-            if tl_id is not None:
-                # Set the cycle time to a random number in the range of cycleTimeRange
-                cycleTime = random.randint(cycleTimeRange[0], cycleTimeRange[1])
-                traci.trafficlight.setPhaseDuration(tl_id, cycleTime)
- 
-                # Create a new intersection with the current cycle time and position
-                self.intersections.append(Intersection(cycleTime, tl_id))
+            # Set the cycle time to a random number in the range of cycleTimeRange
+            cycleTime = random.randint(cycleTimeRange[0], cycleTimeRange[1])
+            traci.trafficlight.setPhaseDuration(tl_id, cycleTime)
+
+            # Create a new intersection with the current cycle time and position
+            self.intersections.append(Intersection(cycleTime, tl_id))
 
 class Intersection:
     cycleTime = 60 # in seconds
@@ -83,7 +81,7 @@ def doAlgorithm():
             population = populations_access.safe_read(i, 83)
             if population is not None:
                 population.totalWaitingTime = runSim(population)
-                print(f"Population {i} total waiting time: {population.totalWaitingTime}")
+                print(f"\nPopulation {i} total waiting time: {population.totalWaitingTime}")
     
         # start a new generation with surviving populations and evolve
         # sort populations by lowest total waiting time
@@ -108,7 +106,7 @@ def doAlgorithm():
         print("Evolutions Complete!")
     
     # print the best population after all generations (will export to excel and SUMO later)
-    print(f"Best population total waiting time after all generations: {bestPopulation.totalWaitingTime}")
+    print(f"\nBest population total waiting time after all generations: {bestPopulation.totalWaitingTime}")
     print(f"Average total waiting time after all generations: {bestPopulation.totalWaitingTime / len(bestPopulation.intersections)}")
     
     # Close SUMO connection
@@ -116,12 +114,12 @@ def doAlgorithm():
 
 def generate_routefile():
     random.seed(42)  # make tests reproducible
-    N = 3600  # number of time steps
+    N = 1000  # number of time steps
     # demand per second from different directions
     pWE = 1. / 10
     pEW = 1. / 11
     pNS = 1. / 30
-    with open("example/data/cross.rou.xml", "w") as routes:
+    with open("normanFiles/norman1.rou.xml", "w") as routes:
         print("""<routes>
         <vType id="typeWE" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="16.67" \
 guiShape="passenger"/>
@@ -153,15 +151,28 @@ def setSimCycleTime(intersections):
     for i in range(len(intersections)):
         intersection = intersections_access.safe_read(i, 153)
         
-        # print(f"Setting cycle time for intersection {intersection.getMyId()} to {intersection.getCycleTime()} seconds")
-        traci.trafficlight.setPhaseDuration(intersection.myId, intersection.getCycleTime())
+        # ---------- THIS SHOULD WORK BUT IT DOESN'T - LEVIN ----------
+        programs = traci.trafficlight.getAllProgramLogics(intersection.getMyId())
+
+        # Pick the active program (assuming programs[0])
+        program = programs[0]
+
+        # Modify the phases
+        for phase in program.phases:
+            if "r" in phase.state:  # If this phase contains a red light
+                phase.duration = intersection.getCycleTime()
+
+        # Apply the modified program
+        traci.trafficlight.setProgramLogic(intersection.getMyId(), program)
 
 def runSim(population):
     # set each intersection cycle time in SUMO
     setSimCycleTime(population.intersections)
     traci.load(['-c', sumo_cfg])
+    int_ids = traci.trafficlight.getIDList()
+    for intersection in population.intersections:
+        traci.trafficlight.setPhaseDuration(intersection.getMyId(), intersection.getCycleTime())
     
-
     return run()
 
 def get_waiting_time():
