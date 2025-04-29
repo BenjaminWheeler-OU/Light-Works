@@ -13,9 +13,9 @@ useGUI = True
 
 if __name__ == "__main__":
     try:
-        if not "SUMO_PATH" in os.environ:
-            os.environ["SUMO_PATH"] = os.path.dirname(sumo.__file__)
-        SUMO_PATH = os.environ["SUMO_PATH"]
+        if not 'SUMO_HOME' in os.environ:
+            os.environ['SUMO_HOME'] = os.path.dirname(sumo.__file__)
+        SUMO_HOME = os.environ['SUMO_HOME']
         sumo_binary = checkBinary('sumo-gui')
         sumo_cfg = os.path.join('normanFiles', 'norman.sumo.cfg')
         traci.start([sumo_binary, '-c', sumo_cfg])
@@ -26,5 +26,6 @@ if __name__ == "__main__":
         if "Connection closed by SUMO" in str(e):
             print("SUMO simulation completed successfully")
         else:
-            ("An unexpected error occurred:", str(e))
+            print("An unexpected error occurred:", str(e))
+            sys.exit(1)
         sys.exit(0)  # Use exit code 0 to indicate normal termination

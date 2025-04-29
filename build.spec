@@ -1,14 +1,15 @@
 # -*- mode: python ; coding: utf-8 -*-
+from PyInstaller.utils.hooks import collect_data_files
+
+datas = []
+datas += collect_data_files('sumo')
 
 
 a = Analysis(
     ['main.py'],
     pathex=[],
-    binaries=[
-        ('.venv/bin/sumo', 'sumo/.'),
-        ('.venv/bin/sumo-gui', 'sumo/.')
-    ],
-    datas=[],
+    binaries=[],
+    datas=datas,
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
