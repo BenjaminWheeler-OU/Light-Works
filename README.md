@@ -64,8 +64,8 @@ python main.py
 ```
 
 #### Compile for Production
-*TBD*
 ```sh
+pyinstaller -y build.spec
 ```
 
 ### Resources
