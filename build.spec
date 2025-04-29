@@ -1,5 +1,7 @@
 # -*- mode: python ; coding: utf-8 -*-
 from PyInstaller.utils.hooks import collect_data_files
+import shutil
+import os
 
 datas = []
 datas += collect_data_files('sumo')
@@ -46,3 +48,8 @@ coll = COLLECT(
     upx_exclude=[],
     name='Light-Works',
 )
+
+#Include data folder when building
+if os.path.exists('dist/Light-Works/data'):
+    shutil.rmtree('dist/Light-Works/data')
+shutil.copytree('data', 'dist/Light-Works/data')
