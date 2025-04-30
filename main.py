@@ -6,10 +6,11 @@ import os
 import sys
 import traci
 import sumo
+import options
 from sumolib import checkBinary
 import learningAlgorithm
 
-useGUI = False
+useGUI = options.runGUI()
 
 if __name__ == "__main__":
     try:
