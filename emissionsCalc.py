@@ -21,7 +21,7 @@ if __name__ == "__main__":
     SUMO_PATH = os.environ["SUMO_PATH"]
     
     sumo_binary = checkBinary('sumo-gui')
-    sumo_cfg = os.path.join('normanFiles', 'norman.sumo.cfg')
+    sumo_cfg = os.path.join('data/norman', 'norman.sumo.cfg')
     traci.start([sumo_binary, '-c', sumo_cfg])
     
     step = 0

@@ -22,7 +22,7 @@ survivalRate = 0.1
 mutateFactor = 0.2
 bestPopulation = None
 sumo_binary = checkBinary('sumo-gui')
-sumo_cfg = os.path.join('normanFiles', 'norman1.sumo.cfg')
+sumo_cfg = os.path.join('data/norman', 'norman.sumo.cfg')
 class Population:
     # default constructor
     def __init__(self):
@@ -134,7 +134,7 @@ def generate_routefile():
     pWE = 1. / 10
     pEW = 1. / 11
     pNS = 1. / 30
-    with open("normanFiles/norman1.rou.xml", "w") as routes:
+    with open("data/norman/norman.rou.xml", "w") as routes:
         print("""<routes>
         <vType id="typeWE" accel="0.8" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="16.67" \
 guiShape="passenger"/>
