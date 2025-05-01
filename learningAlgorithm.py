@@ -9,13 +9,14 @@ import sumolib
 from sumolib import checkBinary
 import sys
 import tests.safeMemoryAccess
+import emissionsCalc
 import os
 # these should all be set in the GUI
 cycleTimeRange = (50, 120) # in seconds
 defaultCycleTime = 60 # in seconds
 
 populationSize = 10
-generations = 10
+generations = 2
 survivalRate = 0.1
 mutateFactor = 0.2
 bestPopulation = None
@@ -76,7 +77,7 @@ def doAlgorithm():
     # initialize the best population
     bestPopulation = copy.deepcopy(populations_access.safe_read(0, 76))
     
-    initialWaitingTime = bestPopulation.totalWaitingTime
+    initialEmissions = bestPopulation.totalEmissions
     
     # repeat for each generation
     for g in range(generations):
@@ -93,7 +94,9 @@ def doAlgorithm():
         populations.sort(key=lambda x: x.totalWaitingTime, reverse=True)
         
         # if this has the new best population, save (copy) it
-        if populations[0].totalWaitingTime < bestPopulation.totalWaitingTime:
+        if len(populations) == 0:
+            print("No populations found")
+        elif populations[0].totalWaitingTime < bestPopulation.totalWaitingTime:
             bestPopulation = copy.deepcopy(populations[0])
             print(f"New best population total waiting time: {bestPopulation.totalWaitingTime}")  
             
@@ -104,7 +107,7 @@ def doAlgorithm():
         # death and evolution time!
         if g != generations - 1:
             # select the top 10% of populations
-            survivingPopulations = populations[:int(populationSize * survivalRate)]
+            survivingPopulations = populations[int(populationSize * survivalRate):] 
             # evolve the surviving populations
             populations = evolvePopulations(survivingPopulations)
         
@@ -114,7 +117,7 @@ def doAlgorithm():
     print(f"\nBest population total waiting time after all generations: {bestPopulation.totalWaitingTime}")
     print(f"Average total waiting time after all generations: {bestPopulation.totalWaitingTime / len(bestPopulation.intersections)}")
     
-    emissionsCalc.calculate_emissions(initialWaitingTime, bestPopulation.totalWaitingTime)
+    emissionsCalc.calculate_emissions(initialEmissions, bestPopulation.totalWaitingTime)
     
     # Close SUMO connection
     traci.close()
@@ -158,8 +161,11 @@ def setSimCycleTime(intersections):
     for i in range(len(intersections)):
         intersection = intersections_access.safe_read(i, 153)
         
-        # ---------- THIS SHOULD WORK BUT IT DOESN'T - LEVIN ----------
         programs = traci.trafficlight.getAllProgramLogics(intersection.getMyId())
+
+        if not programs:
+            print(f"Warning: No programs found for intersection {intersection.getMyId()}")
+            return
 
         # Pick the active program (assuming programs[0])
         program = programs[0]
@@ -225,15 +231,14 @@ def get_waiting_time(vehicles):
 def get_emissions(vehicles):
     current_emissions = 0
     for vehicle_id in vehicles:
-        # Get the vehicle's emissions for this step
-        for vehicle_id in vehicles:
-            current_emissions += traci.vehicle.getCO2Emission(vehicle_id) * traci.simulation.getDeltaT()
+        current_emissions += 250 * traci.simulation.getDeltaT() # assume each vehicle emits 250 grams of CO2 per second
     return current_emissions
 
 def run():
     # simply run the simulation for a set amount of time at the highest possible simulation speed
     step = 0
     total_waiting_time = 0
+    total_emissions = 0
     
     while step < 1000:  # Run simulation for 1000 steps
         traci.simulationStep()

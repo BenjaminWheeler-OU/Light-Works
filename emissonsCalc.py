@@ -11,6 +11,7 @@ def get_waiting_time():
         waiting_times[vehicle_id] = waiting_time
     return waiting_times
 
+# returns the difference between the starting and ending emissions (in grams)
 def calculate_emissions(startingEmissions, endingEmissions):
     return endingEmissions - startingEmissions
 
