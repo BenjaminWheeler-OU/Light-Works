@@ -9,6 +9,7 @@ import sumo
 import options
 from sumolib import checkBinary
 import learningAlgorithm
+import export
 
 useGUI = options.runGUI()
 
@@ -29,4 +30,5 @@ if __name__ == "__main__":
         else:
             print("An unexpected error occurred:", str(e))
             sys.exit(1)
+        export.exportData()
         sys.exit(0)  # Use exit code 0 to indicate normal termination
