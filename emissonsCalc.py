@@ -11,22 +11,8 @@ def get_waiting_time():
         waiting_times[vehicle_id] = waiting_time
     return waiting_times
 
-def calculate_emissions(vehicles):
-    emissions = 0
-    waiting_times = get_waiting_time()
-    
-    total_emissions = 0
-    for vehicle in vehicles:
-        # Base emissions (1 gram per second)
-        emissions += 1
-        
-        # Additional emissions for waiting time
-        if vehicle in waiting_times:
-            waiting_time = waiting_times[vehicle]
-            # Add extra emissions for time spent waiting (0.5 grams per second waiting)
-            emissions += 0.5 * waiting_time
-        total_emissions += emissions
-    return total_emissions
+def calculate_emissions(startingEmissions, endingEmissions):
+    return endingEmissions - startingEmissions
 
 if __name__ == "__main__":
     if not "SUMO_PATH" in os.environ:

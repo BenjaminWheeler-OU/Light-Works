@@ -26,6 +26,7 @@ class Population:
     def __init__(self):
         self.intersections = []
         self.totalWaitingTime = float('inf')
+        self.totalEmissions = float('inf')
         
         # Get all traffic lights (intersections) from SUMO
         traffic_lights = traci.trafficlight.getIDList()
@@ -60,6 +61,8 @@ class Intersection:
     def setCycleTime(self, cycleTime):
         self.cycleTime = cycleTime
 
+startingEmissions = 0
+
 def doAlgorithm():
     populations = []
 
@@ -73,6 +76,8 @@ def doAlgorithm():
     # initialize the best population
     bestPopulation = copy.deepcopy(populations_access.safe_read(0, 76))
     
+    initialWaitingTime = bestPopulation.totalWaitingTime
+    
     # repeat for each generation
     for g in range(generations):
         print(f"Start running sims for gen {g}")
@@ -80,7 +85,7 @@ def doAlgorithm():
         for i in range(len(populations)):
             population = populations_access.safe_read(i, 83)
             if population is not None:
-                population.totalWaitingTime = runSim(population)
+                (population.totalWaitingTime, population.totalEmissions) = runSim(population)
                 print(f"\nPopulation {i} total waiting time: {population.totalWaitingTime}")
     
         # start a new generation with surviving populations and evolve
@@ -108,6 +113,8 @@ def doAlgorithm():
     # print the best population after all generations (will export to excel and SUMO later)
     print(f"\nBest population total waiting time after all generations: {bestPopulation.totalWaitingTime}")
     print(f"Average total waiting time after all generations: {bestPopulation.totalWaitingTime / len(bestPopulation.intersections)}")
+    
+    emissionsCalc.calculate_emissions(initialWaitingTime, bestPopulation.totalWaitingTime)
     
     # Close SUMO connection
     traci.close()
@@ -211,9 +218,17 @@ def get_waiting_time(vehicles):
     current_waiting_time = 0
     for vehicle_id in vehicles:
         # Get the vehicle's waiting time (time spent at traffic lights)
-        current_waiting_time += traci.vehicle.getWaitingTime(vehicle_id)
+        current_waiting_time += traci.vehicle.getWaitingTime(vehicle_id) * traci.simulation.getDeltaT()
     
     return current_waiting_time
+
+def get_emissions(vehicles):
+    current_emissions = 0
+    for vehicle_id in vehicles:
+        # Get the vehicle's emissions for this step
+        for vehicle_id in vehicles:
+            current_emissions += traci.vehicle.getCO2Emission(vehicle_id) * traci.simulation.getDeltaT()
+    return current_emissions
 
 def run():
     # simply run the simulation for a set amount of time at the highest possible simulation speed
@@ -227,7 +242,8 @@ def run():
         vehicles = traci.vehicle.getIDList()
         current_waiting_time = get_waiting_time(vehicles)
         total_waiting_time += current_waiting_time
+        total_emissions += get_emissions(vehicles)
         
         step += 1
     
-    return total_waiting_time
+    return total_waiting_time, total_emissions
