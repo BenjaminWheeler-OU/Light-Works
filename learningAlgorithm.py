@@ -10,6 +10,7 @@ from sumolib import checkBinary
 import sys
 import tests.safeMemoryAccess
 import emissionsCalc
+import profitEstimator
 import os
 # these should all be set in the GUI
 cycleTimeRange = (50, 120) # in seconds
@@ -63,6 +64,7 @@ class Intersection:
         self.cycleTime = cycleTime
 
 startingEmissions = 0
+startingWaitingTime = 0
 
 def doAlgorithm():
     populations = []
@@ -78,6 +80,7 @@ def doAlgorithm():
     bestPopulation = copy.deepcopy(populations_access.safe_read(0, 76))
     
     initialEmissions = bestPopulation.totalEmissions
+    startingWaitingTime = bestPopulation.totalWaitingTime
     
     # repeat for each generation
     for g in range(generations):
@@ -115,9 +118,11 @@ def doAlgorithm():
     
     # print the best population after all generations (will export to excel and SUMO later)
     print(f"\nBest population total waiting time after all generations: {bestPopulation.totalWaitingTime}")
-    print(f"Average total waiting time after all generations: {bestPopulation.totalWaitingTime / len(bestPopulation.intersections)}")
+    print(f"Average waiting time after all generations: {bestPopulation.totalWaitingTime / len(bestPopulation.intersections)}")
     
-    emissionsCalc.calculate_emissions(initialEmissions, bestPopulation.totalWaitingTime)
+    # TODO: Send this and the best population to the excel file
+    emissions_reduced = emissionsCalc.calculate_emissions(initialEmissions, bestPopulation.totalWaitingTime)
+    profit_saved = profitEstimator.estimate_profit(bestPopulation.totalWaitingTime, startingWaitingTime)
     
     # Close SUMO connection
     traci.close()
