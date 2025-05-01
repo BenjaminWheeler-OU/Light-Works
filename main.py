@@ -18,7 +18,7 @@ if __name__ == "__main__":
             os.environ['SUMO_HOME'] = os.path.dirname(sumo.__file__)
         SUMO_HOME = os.environ['SUMO_HOME']
         sumo_binary = checkBinary('sumo-gui' if useGUI else 'sumo')
-        sumo_cfg = os.path.join('normanFiles', 'norman.sumo.cfg')
+        sumo_cfg = os.path.join('normanFiles', 'norman1.sumo.cfg')
         traci.start([sumo_binary, '-c', sumo_cfg])
         
         # run the learning algorithm    
