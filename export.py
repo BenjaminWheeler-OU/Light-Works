@@ -19,12 +19,14 @@ def exportData():
     fileData = pd.DataFrame({
         'Best total waiting time': [learningAlgorithm.bestPopulation.totalWaitingTime],
         'Avg total waiting time': [avgTotalTime],
-
     })
 
-    dataToExcel = pd.ExcelWriter(file_name)
+    # Check if file exists
+    if os.path.exists(file_name):
+        existing_data = pd.read_excel(file_name)
+        combined_data = pd.concat([existing_data, fileData], ignore_index=True)
+        combined_data.to_excel(file_name, index=False)
+    else:
+        fileData.to_excel(file_name, index=False)
 
-    fileData.to_excel(dataToExcel)
-
-    dataToExcel.close()
     print('Data was successfully exported to an Excel File.')
