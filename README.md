@@ -7,7 +7,7 @@ Improving traffic lights based on AI.
 ### Installing
 * Navigate to the [actions](https://github.com/BenjaminWheeler-OU/Light-Works/actions/) tab
 * Click the most recent *workflow*
-* Scroll to the *bottom* and download either the Windows or Linux build
+* Scroll to the *bottom* and download either the Windows, MacOS, or Linux build
 * Navigate to your *downloads* folder and extract the *zip* file
 
 ### Usage
@@ -16,8 +16,9 @@ Improving traffic lights based on AI.
 * Choose if you want to use the GUI
     * Using the GUI requires the user to press play every cycle
     * With no-GUI, the program requires no further input
-* After first run, a options folder will be generated
-* Edit it with a text editor to tweak generation parameters
+* After first run, an options folder will be generated
+    * Edit it with a text editor to tweak generation parameters
+* Once the simulation is done running, the output will be saved as bestPopulationData.xlsx
 
 ## Developer's Guide
 
