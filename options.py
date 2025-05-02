@@ -2,19 +2,27 @@ import tkinter
 from tkinter import ttk
 import yaml
 
-options = {'generations': 10}
+options = {
+    'generations': 2,
+    'population-size': 10,
+    'survival-rate': 0.1,
+    'mutate-factor': 0.2
+}
 
 root = tkinter.Tk()
 root.title("GUI Options") # Name the Window
 root.geometry("500x350") # window size as width * height
 
+def get(i):
+    global options
+    return options[i]
 
 def load():
     global options
 
     try:
         with open('options.yml', 'r') as file:
-            options.update(yaml.full_load(file))
+            options.update(yaml.safe_load(file))
     except FileNotFoundError:
         pass
     except yaml.scanner.ScannerError:
@@ -25,6 +33,7 @@ def load():
 
     with open('options.yml', 'w') as file:
         yaml.dump(options, file)
+    print(options)
 
 
 def runGUI():

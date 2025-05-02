@@ -12,6 +12,7 @@ import tests.safeMemoryAccess
 import emissionsCalc
 import profitEstimator
 import os
+import options
 # these should all be set in the GUI
 cycleTimeRange = (50, 120) # in seconds
 defaultCycleTime = 60 # in seconds
@@ -68,6 +69,12 @@ startingWaitingTime = 0
 
 def doAlgorithm():
     global bestPopulation  # Declare bestPopulation as global
+    
+    populationSize = options.get('population-size')
+    generations = options.get('generations')
+    survivalRate = options.get('survival-rate')
+    mutateFactor = options.get('mutate-factor')
+    
     populations = []
 
     print("Starting learning algorithm")
