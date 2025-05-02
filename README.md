@@ -52,6 +52,40 @@ pip install -r requirements.txt
 ```sh
 python main.py
 ```
+#### Import Custom Map
+* Navigate to OpenStreetMap website to create the desired map [OpenStreetMap](https://www.openstreetmap.org)
+* After downloading your map, use a OSM editing tool like JOSM or another program alike
+    *Edit values or add streets that may have been deleted during the creation of your OSM file.
+* After your map is properly edited, open up a terminal and input the following
+    * netconvert --osm-files yourfile.osm --output-file youroutputfile.net.xml
+* Now you can view your new output file in SUMO which will help you see if you need to go back and change anything.
+* Now you need to generate random trips on your map so that there is random traffic being generated
+    *randomTrips.py should be installed in the SUMO directory but if not you can find it here [randomTrips](https://github.com/eclipse-sumo/sumo/blob/main/tools/randomTrips.py)
+* Now back in the terminal input,
+    *randomTrips.py -n youroutputfile.net.xml  -e 1000 -o yournewtripfile.trips.xml
+* Now you need to convert these trips to routes by using the terminal you input,
+    *duarouter -n youroutputfile.net.xml --route-file yournewtripfile.trips.xml -o yournewroutefile.rou.xml
+* The last step is to create the cfg file for sumo which points towards the other files you created
+*In the folder where all of the other files you have created are stored, create a new text file and input, 
+*<?xml version = "1.0" encoding="iso-8859-1"?>
+
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="youroutputfile.net.xml"/>
+        <route-files value="yourroutefile.rou.xml"/>
+    </input>
+
+    <time>
+        <begin value="0"/>
+        <end value="1000"/>
+
+    </time>
+
+</configuration>
+*
+*now you can properly open your cfg file inside of SUMO which has all of the randomtrips loaded on your custom map.
+
 
 #### Compile for Production
 ```sh
