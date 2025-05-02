@@ -1,11 +1,30 @@
 import tkinter
 from tkinter import ttk
+import yaml
 
-useGUI = False
+options = {'generations': 10}
 
-root = tkinter.Tk();
+root = tkinter.Tk()
 root.title("GUI Options") # Name the Window
 root.geometry("500x350") # window size as width * height
+
+
+def load():
+    global options
+
+    try:
+        with open('options.yml', 'r') as file:
+            options.update(yaml.full_load(file))
+    except FileNotFoundError:
+        pass
+    except yaml.scanner.ScannerError:
+        print('The options file is formatted incorrectly. Regenerating...')
+
+    if 'GUI' not in options:
+        runGUI()
+
+    with open('options.yml', 'w') as file:
+        yaml.dump(options, file)
 
 
 def runGUI():
@@ -22,16 +41,14 @@ def runGUI():
     ttk.Button(frm, text="Quit", command=root.destroy).grid(column=0, row=3)
     root.mainloop() # Quit if No Decision
 
-    return useGUI
-
 def trueGUI():
-    global useGUI 
-    useGUI = True
+    global options
+    options['GUI'] = True
     root.destroy()
 
 def falseGUI():
-    global useGUI
-    useGUI = False
+    global options
+    options['GUI'] = False
     root.destroy()
 
 # from tkinter import *
