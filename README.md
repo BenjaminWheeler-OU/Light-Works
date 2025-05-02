@@ -55,7 +55,7 @@ python main.py
 #### Import Custom Map
 * Navigate to OpenStreetMap website to create the desired map [OpenStreetMap](https://www.openstreetmap.org)
 * After downloading your map, use a OSM editing tool like JOSM or another program alike
-    *Edit values or add streets that may have been deleted during the creation of your OSM file.
+    * Edit values or add streets that may have been deleted during the creation of your OSM file.
 * After your map is properly edited, open up a terminal and input the following
     * netconvert --osm-files yourfile.osm --output-file youroutputfile.net.xml
 * Now you can view your new output file in SUMO which will help you see if you need to go back and change anything.
