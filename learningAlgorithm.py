@@ -67,6 +67,7 @@ startingEmissions = 0
 startingWaitingTime = 0
 
 def doAlgorithm():
+    global bestPopulation  # Declare bestPopulation as global
     populations = []
 
     print("Starting learning algorithm")

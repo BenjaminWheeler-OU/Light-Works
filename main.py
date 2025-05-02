@@ -24,11 +24,11 @@ if __name__ == "__main__":
         
         # run the learning algorithm    
         learningAlgorithm.doAlgorithm()
+        export.exportData()
     except Exception as e:
         if "Connection closed by SUMO" in str(e):
             print("SUMO simulation completed successfully")
         else:
             print("An unexpected error occurred:", str(e))
             sys.exit(1)
-        export.exportData()
         sys.exit(0)  # Use exit code 0 to indicate normal termination

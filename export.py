@@ -12,12 +12,14 @@ def exportData():
 
     #Best population total waiting time from all generations
     #Average total waiting time after all generation 
+
+    print(learningAlgorithm.bestPopulation)
+
     avgTotalTime = learningAlgorithm.bestPopulation.totalWaitingTime / len(learningAlgorithm.bestPopulation.intersections)
     fileData = pd.DataFrame({
         'Best total waiting time': [learningAlgorithm.bestPopulation.totalWaitingTime],
         'Avg total waiting time': [avgTotalTime],
 
-        #TODO: Add emissions reduced & profit saved cells
     })
 
     dataToExcel = pd.ExcelWriter(file_name)
