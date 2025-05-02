@@ -2,18 +2,22 @@
 
 Improving traffic lights based on AI.
 
-## Description
-
-*TBD*
-
 ## User's Guide
 
 ### Installing
-***TBD***
+* Navigate to the [actions](https://github.com/BenjaminWheeler-OU/Light-Works/actions/) tab
+* Click the most recent *workflow*
+* Scroll to the *bottom* and download either the Windows or Linux build
+* Navigate to your *downloads* folder and extract the *zip* file
 
 ### Usage
-***TBD***
-
+* Navigate to the extracted folder and run *Light-Works*
+* * Run it through the terminal to see detailed output
+* Pick wether to use the GUI
+* * Using the GUI requires the user to press play every cycle
+* * With no-GUI, the program requires no further input
+* After first run, a options folder will be generated
+* Edit it with a text editor to tweak generation parameters
 
 ## Developer's Guide
 
