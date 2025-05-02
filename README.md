@@ -85,7 +85,8 @@ python main.py
 </configuration>
 
 * now you can properly open your cfg file inside of SUMO which has all of the randomtrips loaded on your custom map.
-
+* Place all files generated from the previous steps inside the "data" folder within the repository you cloned.
+* Within main.py and learningAlgorithm.py change the source to your maps name.
 
 #### Compile for Production
 ```sh
