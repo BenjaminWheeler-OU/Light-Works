@@ -20,38 +20,6 @@ Improving traffic lights based on AI.
     * Edit it with a text editor to tweak generation parameters
 * Once the simulation is done running, the output will be saved as bestPopulationData.xlsx
 
-## Developer's Guide
-
-### Pre-Setup
-Ensure the following are installed and setup: 
-* Git with Github authentication
-* Python
-* Either Pip or venv
-
-### Project Setup
-If you are using VSCode's terminal, switch from PowerShell to CMD
-
-#### Clone Main Branch
-```sh
-git clone https://github.com/BenjaminWheeler-OU/Light-Works.git
-```
-
-#### Change Directory
-If you are using VSCode, then open the newly created **Light-Works** folder  
-Otherwise:
-```sh
-cd Light-Works
-```
-
-#### Install Dependencies
-```sh
-pip install -r requirements.txt
-```
-
-#### Run
-```sh
-python main.py
-```
 #### Import Custom Map
 * Navigate to OpenStreetMap website to create the desired map [OpenStreetMap](https://www.openstreetmap.org)
 * After downloading your map, use a OSM editing tool like JOSM or another program alike
@@ -87,6 +55,39 @@ python main.py
 * now you can properly open your cfg file inside of SUMO which has all of the randomtrips loaded on your custom map.
 * Place all files generated from the previous steps inside the "data" folder within the repository you cloned.
 * Within main.py and learningAlgorithm.py change the source to your maps name.
+
+## Developer's Guide
+
+### Pre-Setup
+Ensure the following are installed and setup: 
+* Git with Github authentication
+* Python
+* Either Pip or venv
+
+### Project Setup
+If you are using VSCode's terminal, switch from PowerShell to CMD
+
+#### Clone Main Branch
+```sh
+git clone https://github.com/BenjaminWheeler-OU/Light-Works.git
+```
+
+#### Change Directory
+If you are using VSCode, then open the newly created **Light-Works** folder  
+Otherwise:
+```sh
+cd Light-Works
+```
+
+#### Install Dependencies
+```sh
+pip install -r requirements.txt
+```
+
+#### Run
+```sh
+python main.py
+```
 
 #### Compile for Production
 ```sh
