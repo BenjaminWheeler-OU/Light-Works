@@ -12,10 +12,10 @@ Improving traffic lights based on AI.
 
 ### Usage
 * Navigate to the extracted folder and run *Light-Works*
-* * Run it through the terminal to see detailed output
+    * Run it through the terminal to see detailed output
 * Choose if you want to use the GUI
-* * Using the GUI requires the user to press play every cycle
-* * With no-GUI, the program requires no further input
+    * Using the GUI requires the user to press play every cycle
+    * With no-GUI, the program requires no further input
 * After first run, a options folder will be generated
 * Edit it with a text editor to tweak generation parameters
 
