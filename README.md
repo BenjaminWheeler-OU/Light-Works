@@ -67,7 +67,7 @@ python main.py
     * duarouter -n youroutputfile.net.xml --route-file yournewtripfile.trips.xml -o yournewroutefile.rou.xml
 * The last step is to create the cfg file for sumo which points towards the other files you created
 * In the folder where all of the other files you have created are stored, create a new text file and input, 
-* <?xml version = "1.0" encoding="iso-8859-1"?>
+ <?xml version = "1.0" encoding="iso-8859-1"?>
 
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
 
@@ -83,8 +83,8 @@ python main.py
     </time>
 
 </configuration>
-*
-*now you can properly open your cfg file inside of SUMO which has all of the randomtrips loaded on your custom map.
+
+* now you can properly open your cfg file inside of SUMO which has all of the randomtrips loaded on your custom map.
 
 
 #### Compile for Production
